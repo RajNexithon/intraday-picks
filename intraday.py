@@ -1,7 +1,7 @@
 # intraday.py — DAILY TOP-10 INTRADAY PICKS (dynamic universe, auto data)
 # Setup: pip install requests
 # Locally: python intraday.py   |   GitHub Actions: auto, 8 PM IST Mon-Fri
-# BEST RUN TIME: 7:00-9:00 PM IST (bhavcopy + Yahoo candle dono fresh milte hain)
+# Run window: 7 PM ke baad kabhi bhi — bhavcopy patch ki wajah se 4 AM bhi chalega
 
 import os, csv, io, time, requests, webbrowser
 from datetime import datetime, timezone, timedelta, time as dtime
@@ -63,8 +63,9 @@ def nifty500_universe():
     return {}
 
 def bhav_top():
-    """Latest available bhavcopy se EQ stocks: close>=50, turnover>=5cr.
-    Returns ({sym:(close, turnover, deliv%)}, date) ya ({}, None)"""
+    """Latest bhavcopy se EQ stocks ka FULL OHLCV + delivery (OFFICIAL NSE data).
+    Ye hi last candle ka source-of-truth hoga — Yahoo lag ki dawa.
+    Returns ({sym: dict(o,h,l,c,v,deliv,turn)}, date) ya ({}, None)"""
     d = datetime.now(IST).date()
     for back in range(6):                       # holiday/backfill handle
         day = d - timedelta(days=back)
@@ -79,17 +80,21 @@ def bhav_top():
                     row = {k.strip(): (v.strip() if isinstance(v, str) else v) for k, v in row.items()}
                     if row.get("SERIES") != "EQ": continue
                     try:
-                        c = float(row["CLOSE_PRICE"]); q = float(row["TTL_TRD_QNTY"])
+                        o = float(row["OPEN_PRICE"]); h = float(row["HIGH_PRICE"])
+                        l = float(row["LOW_PRICE"]);  c = float(row["CLOSE_PRICE"])
+                        v = float(row["TTL_TRD_QNTY"])
                         dv = float(row.get("DELIV_PER") or 0)
                     except Exception: continue
-                    if c >= 50 and c*q >= 5e7:          # ₹5 crore+ turnover
-                        out[row["SYMBOL"]] = (c, c*q, dv)
+                    if c >= 50 and o > 0 and c*v >= 5e7:   # ₹5cr+ turnover, penny filter
+                        out[row["SYMBOL"]] = dict(o=o, h=h, l=l, c=c, v=v, deliv=dv, turn=c*v)
                 if out: return out, day
             except Exception: pass
     return {}, None
 
 # ---------------- 2) DATA ----------------
 def fetch(sym):
+    """Yahoo se 6-mahine ki daily history. Sirf HISTORY ke liye —
+    aaj/fresh candle ki zimmedari bhavcopy patch ki hai."""
     for _ in range(2):
         try:
             r = S.get("https://query1.finance.yahoo.com/v8/finance/chart/"
@@ -102,7 +107,7 @@ def fetch(sym):
                 if o and h and l and c and v:
                     rows.append((datetime.fromtimestamp(t, IST).date(), o, h, l, c, v))
             if len(rows) >= 26:
-                if any((r[2]-r[3])/r[4] > 0.30 for r in rows[-20:]):  # corrupt/split data guard
+                if any((r[2]-r[3])/r[4] > 0.30 for r in rows[-20:]):  # corrupt/split guard
                     return None
                 return rows
         except Exception: pass
@@ -181,15 +186,15 @@ th:first-child,td:first-child{{text-align:left}}.sl{{color:#ff5d5d}}.tg{{color:#
 2 &nbsp;Entry ke saath hi SL order daalo. SL hit = trade khatam.<br>
 3 &nbsp;Max 3 trades. 2 winner = ₹{RISK*RR*2:g} → target poora → band.<br>
 4 &nbsp;3:00 PM ke baad naya entry nahi. &nbsp; 5 &nbsp;Result/RBI/expiry day pe size aadha.</div>
-<div class=foot>Data: NSE universe + Yahoo EOD, fully automatic · Educational — market risk apna · {gen}</div></body></html>"""
+<div class=foot>Data: NSE universe + bhavcopy (source of truth) + Yahoo history · Educational — market risk apna · {gen}</div></body></html>"""
 
 # ---------------- MAIN ----------------
 def main():
     t0 = time.time()
     pairs = nifty500_universe()                      # sym -> industry
-    bhav, bdate = bhav_top()                         # turnover + delivery
+    bhav, bdate = bhav_top()                         # OFFICIAL OHLCV + delivery
     if bhav:
-        ranked = sorted(bhav.items(), key=lambda kv: -kv[1][1])[:130]
+        ranked = sorted(bhav.items(), key=lambda kv: -kv[1]["turn"])[:130]
         syms = [(s, pairs.get(s, "OTHER")) for s, _ in ranked]
         src = f"NSE bhavcopy {bdate:%d %b}, top turnover" if bdate else "NSE top turnover"
     else:
@@ -206,14 +211,30 @@ def main():
         nf20 = (nf_rows[-1][4]/P[-21][4]-1)*100 if len(P) >= 21 else None
         strong = nf_rows[-1][4] >= sma
 
-    picks, sig = [], None; done = 0
+    picks, sig = [], None; done = 0; patched = 0
     for sym, ind in syms:
         rows = fetch(sym); time.sleep(0.3); done += 1
         if done % 25 == 0: print(f"  ...{done}/{len(syms)} scanned, {len(picks)} picks ab tak")
         if not rows: continue
+
+        # ---- BHAVCOPY PATCH: last candle official NSE data se ----
+        # Yahoo same din ka candle de = replace (official zyada accurate)
+        # Yahoo purana/pichhde hue = append (Yahoo lag ki dawa)
+        if bdate and sym in bhav:
+            b = bhav[sym]
+            if rows[-1][0] == bdate:
+                rows[-1] = (bdate, b["o"], b["h"], b["l"], b["c"], b["v"])
+            elif rows[-1][0] < bdate:
+                rows = rows + [(bdate, b["o"], b["h"], b["l"], b["c"], b["v"])]
+                patched += 1
+
         sig = sig or rows[-1][0]
-        p = analyze(sym, rows, ind, bhav.get(sym, (0, 0, 0))[2], nf20)
+        p = analyze(sym, rows, ind, bhav.get(sym, {}).get("deliv", 0), nf20)
         if p and p["sc"] >= MIN_SC: picks.append(p)
+
+    if patched:
+        src += f" | Yahoo {patched} stocks me pichhda tha — {bdate:%d %b} candle bhavcopy se patch ✓"
+        print(f"\n[BHAVCOPY PATCH] {patched} stocks me Yahoo ka candle missing/stale tha — official data se joda.")
 
     picks.sort(key=lambda p: (-p["sc"], -p["vx"]))
     final, cnt = [], {}
@@ -224,7 +245,7 @@ def main():
 
     if not sig: sig = datetime.now(IST).date()
 
-    # ---- PLAN-DATE FIX: current time se decide hota hai, data ke last candle se NAHI ----
+    # ---- PLAN-DATE: current time se decide, data se nahi ----
     now = datetime.now(IST)
     if now.time() < dtime(9, 15):                     # open se pehle chalaya
         plan_d = now.date()                           #   -> AAJ ka session
@@ -232,10 +253,6 @@ def main():
         plan_d = now.date() + timedelta(days=1)       #   -> agla session
     while plan_d.weekday() >= 5:
         plan_d += timedelta(days=1)                   # weekend skip
-
-    # Yahoo lag warning — signal bhavcopy se purana ho to meta me dikh jayega
-    if bdate and sig and sig < bdate:
-        src += f" | YAHOO LAG: {sig} tak ka candle, {bdate} missing — 7PM ke baad dobara chalao"
 
     gen = now.strftime('%d %b %H:%M')
 
