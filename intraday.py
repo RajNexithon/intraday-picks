@@ -2,6 +2,7 @@
 # Setup: pip install requests
 # Locally: python intraday.py   |   GitHub Actions: auto, 8 PM IST Mon-Fri
 # Run window: 7 PM ke baad kabhi bhi — bhavcopy patch ki wajah se 4 AM bhi chalega
+# Output: plan.html (page) + picks.csv (aaj ke picks, Excel-ready) + history.csv (poora record)
 
 import os, csv, io, time, requests, webbrowser
 from datetime import datetime, timezone, timedelta, time as dtime
@@ -64,7 +65,6 @@ def nifty500_universe():
 
 def bhav_top():
     """Latest bhavcopy se EQ stocks ka FULL OHLCV + delivery (OFFICIAL NSE data).
-    Ye hi last candle ka source-of-truth hoga — Yahoo lag ki dawa.
     Returns ({sym: dict(o,h,l,c,v,deliv,turn)}, date) ya ({}, None)"""
     d = datetime.now(IST).date()
     for back in range(6):                       # holiday/backfill handle
@@ -94,7 +94,7 @@ def bhav_top():
 # ---------------- 2) DATA ----------------
 def fetch(sym):
     """Yahoo se 6-mahine ki daily history. Sirf HISTORY ke liye —
-    aaj/fresh candle ki zimmedari bhavcopy patch ki hai."""
+    fresh candle ki zimmedari bhavcopy patch ki hai."""
     for _ in range(2):
         try:
             r = S.get("https://query1.finance.yahoo.com/v8/finance/chart/"
@@ -154,7 +154,31 @@ def analyze(sym, rows, ind, deliv, nf20):
     return dict(sym=sym, ind=ind, c=c, e=entry, sl=sl, t=tgt, q=qty,
                 r=qty*rps, g=qty*rps*RR, sc=sc, vx=vx, why=" + ".join(why))
 
-# ---------------- 4) HTML REPORT ----------------
+# ---------------- 4) CSV (Excel-friendly) ----------------
+CSV_HDR = ["signal_date","plan_date","stock","sector","close","entry",
+           "sl","target","qty","risk_rs","gain_at_target_rs","score_of_12","reason"]
+
+def write_csvs(final, sig, plan_d):
+    """history.csv = saare din append (audit ke liye)
+       picks.csv    = aaj ke picks, roz overwrite (Excel me wahi view jo page pe hai)"""
+    rows = [[sig.isoformat(), plan_d.isoformat(), p["sym"], p["ind"],
+             round(p["c"],2), p["e"], p["sl"], p["t"], p["q"],
+             round(p["r"]), round(p["g"]), p["sc"], p["why"]] for p in final]
+
+    # history.csv — header sirf pehli baar
+    hnew = not Path("history.csv").exists()
+    with open("history.csv", "a", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f)
+        if hnew: w.writerow(CSV_HDR)
+        w.writerows(rows)
+
+    # picks.csv — roz fresh
+    with open("picks.csv", "w", newline="", encoding="utf-8-sig") as f:
+        w = csv.writer(f)
+        w.writerow(CSV_HDR)
+        w.writerows(rows)
+
+# ---------------- 5) HTML REPORT ----------------
 def build_html(picks, sig, plan_d, gen, src, uni_n, strong_market):
     rows = "".join(
         f"<tr><td>{i+1}</td><td><b>{p['sym']}</b></td><td class=why>{p['ind']}</td><td>{p['c']:.2f}</td>"
@@ -218,8 +242,6 @@ def main():
         if not rows: continue
 
         # ---- BHAVCOPY PATCH: last candle official NSE data se ----
-        # Yahoo same din ka candle de = replace (official zyada accurate)
-        # Yahoo purana/pichhde hue = append (Yahoo lag ki dawa)
         if bdate and sym in bhav:
             b = bhav[sym]
             if rows[-1][0] == bdate:
@@ -264,14 +286,12 @@ def main():
 
     Path("plan.html").write_text(
         build_html(final, sig, plan_d, gen, src, len(syms), strong), encoding="utf-8")
-
-    with open("history.csv", "a", encoding="utf-8") as f:   # record-keeping
-        for p in final:
-            f.write(f"{sig},{p['sym']},{p['e']},{p['sl']},{p['t']},{p['q']},{p['sc']}\n")
+    write_csvs(final, sig, plan_d)
 
     if not os.environ.get("GITHUB_ACTIONS"):
         webbrowser.open(Path("plan.html").resolve().as_uri())
-    print(f"\nDone in {time.time()-t0:.0f}s — plan.html ready ({len(syms)} stocks scanned).")
+    print(f"\nDone in {time.time()-t0:.0f}s — plan.html + picks.csv ready ({len(syms)} stocks scanned).")
+    print("Excel ke liye: picks.csv (aaj ke picks) | history.csv (saare din ka record)")
 
 if __name__ == "__main__":
     main()
