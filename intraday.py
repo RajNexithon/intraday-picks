@@ -1,9 +1,10 @@
 # intraday.py — DAILY TOP-10 INTRADAY PICKS (dynamic universe, auto data)
 # Setup: pip install requests
 # Locally: python intraday.py   |   GitHub Actions: auto, 8 PM IST Mon-Fri
+# BEST RUN TIME: 7:00-9:00 PM IST (bhavcopy + Yahoo candle dono fresh milte hain)
 
 import os, csv, io, time, requests, webbrowser
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, time as dtime
 from pathlib import Path
 
 # ---------- settings (env se override ho sakti hain) ----------
@@ -141,7 +142,7 @@ def analyze(sym, rows, ind, deliv, nf20):
     entry = TICK(max(h*1.001, c*1.0005))
     sl    = TICK(entry - 0.7*atr)
     rps   = entry - sl
-    if rps < entry*0.004: return None                  # SL too tight
+    if rps < entry*0.004: return None                  # SL bahut tight = wick hunt
     tgt = TICK(entry + RR*rps)
     qty = min(int(RISK/rps), int(CAPITAL*LEV/entry))
     if qty < 1: return None
@@ -177,7 +178,7 @@ th:first-child,td:first-child{{text-align:left}}.sl{{color:#ff5d5d}}.tg{{color:#
 <table><tr><th>#</th><th>Stock</th><th>Sector</th><th>Close</th><th>Entry</th><th>SL</th><th>Target</th><th>Qty</th><th>Risk</th><th>Gain@T</th><th>Score</th><th class=why>Kyun</th></tr>{rows}</table>
 <div class=rules><b>KAL KE 5 RULES:</b><br>
 1 &nbsp;Entry tabhi jab price ENTRY ke UPAR 5-min candle CLOSE kare. 0.7%+ gap-up ho to SKIP.<br>
-2 &nbsp;Entry ke saath hi SL order. SL hit = trade khatam.<br>
+2 &nbsp;Entry ke saath hi SL order daalo. SL hit = trade khatam.<br>
 3 &nbsp;Max 3 trades. 2 winner = ₹{RISK*RR*2:g} → target poora → band.<br>
 4 &nbsp;3:00 PM ke baad naya entry nahi. &nbsp; 5 &nbsp;Result/RBI/expiry day pe size aadha.</div>
 <div class=foot>Data: NSE universe + Yahoo EOD, fully automatic · Educational — market risk apna · {gen}</div></body></html>"""
@@ -222,9 +223,21 @@ def main():
         if len(final) >= TOP_N: break
 
     if not sig: sig = datetime.now(IST).date()
-    plan_d = sig + timedelta(days=1)
-    while plan_d.weekday() >= 5: plan_d += timedelta(days=1)
-    gen = datetime.now(IST).strftime('%d %b %H:%M')
+
+    # ---- PLAN-DATE FIX: current time se decide hota hai, data ke last candle se NAHI ----
+    now = datetime.now(IST)
+    if now.time() < dtime(9, 15):                     # open se pehle chalaya
+        plan_d = now.date()                           #   -> AAJ ka session
+    else:                                             # din me ya close ke baad
+        plan_d = now.date() + timedelta(days=1)       #   -> agla session
+    while plan_d.weekday() >= 5:
+        plan_d += timedelta(days=1)                   # weekend skip
+
+    # Yahoo lag warning — signal bhavcopy se purana ho to meta me dikh jayega
+    if bdate and sig and sig < bdate:
+        src += f" | YAHOO LAG: {sig} tak ka candle, {bdate} missing — 7PM ke baad dobara chalao"
+
+    gen = now.strftime('%d %b %H:%M')
 
     print(f"\n{'STOCK':<12}{'SECTOR':<22}{'ENTRY':>9}{'SL':>9}{'TARGET':>9}{'QTY':>5}{'RISK':>7}{'GAIN@T':>8}  SCORE")
     for p in final:
