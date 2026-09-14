@@ -1,0 +1,3 @@
+﻿signal_date,plan_date,stock,sector,close,entry,sl,target,qty,risk_rs,gain_at_target_rs,score_of_12,reason
+2026-09-14,2026-09-15,BLUESTARCO,Consumer Durables,1558.0,1566.65,1534.1,1631.75,12,391,781,8,20D HIGH KE PAAS + VOL 2.6x + GREEN + STRONG CLOSE
+2026-09-14,2026-09-15,MAXHEALTH,Healthcare,1037.7,1042.55,1022.55,1082.55,20,400,800,7,20D HIGH KE PAAS + GREEN + STRONG CLOSE + DELIV 59%
