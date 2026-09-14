@@ -1,0 +1,29 @@
+name: Daily Intraday Picks
+on:
+  schedule:
+    - cron: "30 14 * * 1-5"    # 20:00 IST, Mon-Fri (UTC me likhna padta hai)
+  workflow_dispatch: {}         # manual test button
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install requests
+      - run: python intraday.py
+        env:
+          CAPITAL: "150000"     # apne hisaab se badlo
+          RISK: "400"
+          TOP_N: "10"
+      - name: Commit plan
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add plan.html history.csv
+          git commit -m "plan: $(TZ=Asia/Kolkata date +'%d %b %Y')" || echo "no change"
+          git push
