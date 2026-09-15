@@ -1,1 +1,52 @@
+name: Daily Intraday Picks
 
+on:
+  schedule:
+    - cron: "30 14 * * 1-5"   # 14:30 UTC = 8:00 PM IST, Mon-Fri (GitHub cron 5-30 min late ho sakta hai)
+  workflow_dispatch:           # manual test button (Actions tab me)
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-picks
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install requests
+
+      - name: Run scanner
+        env:
+          CAPITAL: "150000"
+          RISK: "400"
+          RR: "2"
+          LEV: "5"
+          TOP_N: "10"
+          MIN_SC: "7"
+          MAX_PER_SECTOR: "3"
+        run: python intraday.py
+
+      - name: Commit & Push outputs
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add plan.html picks.csv history.csv
+          if git diff --cached --quiet; then
+            echo "Koi change nahi — skip commit"
+          else
+            git commit -m "picks update: $(date -u +'%d %b %Y %H:%M UTC')"
+            git push
+          fi
