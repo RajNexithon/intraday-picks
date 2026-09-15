@@ -37,6 +37,7 @@ jobs:
           TOP_N: "10"
           MIN_SC: "7"
           MAX_PER_SECTOR: "3"
+          HIST_DAYS: "40"      # ~40 sessions ki NSE/BSE bhavcopy history (Yahoo nahi)
         run: python intraday.py
 
       - name: Commit & Push outputs
