@@ -3,27 +3,42 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Daily Intraday Picks — NSE Cash</title>
+<title>Daily Intraday Picks — NSE Cash (LONG + SHORT)</title>
 <style>
 :root{--amber:#ffb300;--bg:#0d0c08;--panel:#14110a;--line:#2a2517;--txt:#e8e0c8;
       --dim:#9a927a;--green:#7ddb7d;--red:#ff7b72}
 *{box-sizing:border-box}
 body{margin:0;padding:22px 14px;background:var(--bg);color:var(--txt);
      font-family:Consolas,'Courier New',monospace;font-size:14px}
-.wrap{max-width:1200px;margin:0 auto}
+.wrap{max-width:1280px;margin:0 auto}
 h1{color:var(--amber);font-size:21px;margin:0 0 6px;letter-spacing:.5px}
 .meta{color:var(--dim);font-size:12.5px;line-height:1.8;margin-bottom:12px}
 .patch{color:var(--green)}
 .warn{color:#ff9d66}
 .banner{border:1px solid var(--red);background:#2a0f0f;color:#ffb4ae;padding:10px 14px;
         margin:10px 0;font-weight:bold;font-size:13.5px;line-height:1.6}
+.fii{border:1px solid var(--line);background:var(--panel);padding:12px 16px;margin:10px 0}
+.fii h2{color:var(--amber);font-size:14px;margin:0 0 8px}
+.fii table{font-size:12.5px;min-width:0;width:auto}
+.fii th,.fii td{padding:4px 14px 4px 0;border-bottom:1px solid #1e1a10}
+.fii th{color:var(--dim);border-bottom:1px solid var(--line);font-size:11.5px}
+.pos{color:var(--green);font-weight:bold}
+.neg{color:var(--red);font-weight:bold}
+.verdict{margin-top:8px;font-size:12.5px}
+.verdict.bad{color:#ffb4ae}.verdict.warn{color:#ff9d66}
+.verdict.good{color:var(--green)}.verdict.ok{color:var(--dim)}
 .tablewrap{overflow-x:auto;border:1px solid var(--line)}
-table{width:100%;border-collapse:collapse;font-size:13px;min-width:1000px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:1080px}
 th{background:#171309;color:var(--amber);text-align:right;padding:9px 8px;
    border-bottom:2px solid var(--amber);white-space:nowrap;font-size:12px}
 th.l,td.l{text-align:left}
 td{padding:8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 tr:hover td{background:#1a160c}
+tr.rL td{background:rgba(125,219,125,.045)}
+tr.rS td{background:rgba(255,123,114,.06)}
+tr.rS:hover td{background:rgba(255,123,114,.1)}
+.dirL{color:var(--green);font-weight:bold}
+.dirS{color:var(--red);font-weight:bold}
 .sym{color:var(--amber);font-weight:bold}
 .sec{color:#c8b78a;font-size:12px}
 .sc{color:var(--amber);font-weight:bold}
@@ -33,6 +48,8 @@ tr:hover td{background:#1a160c}
 .tg{color:var(--green)}
 .gn{color:var(--green);font-weight:bold}
 .rsn{color:var(--dim);font-size:11.5px;text-align:left;white-space:normal;min-width:240px;line-height:1.55}
+.legend{color:var(--dim);font-size:11.5px;margin:8px 0 2px;line-height:1.7}
+.legend b.dl{color:var(--green)} .legend b.ds{color:var(--red)}
 .rules{border:1px solid var(--line);background:var(--panel);padding:14px 18px;margin-top:18px}
 .rules h2{color:var(--amber);font-size:15px;margin:0 0 8px}
 .rules ol{margin:0;padding-left:22px;line-height:2;font-size:13px}
@@ -42,19 +59,23 @@ tr:hover td{background:#1a160c}
 </style>
 </head>
 <body><div class="wrap">
-<h1>AAJ KE 2 PICKS — Wed, 16 Sep 2026 ke liye</h1>
-<div class="meta">Signal: Tue, 15 Sep 2026 (close) | Universe: 130 liquid stocks (NIFTY500 (499)) | Capital: ₹1,50,000 | Risk: ₹400/trade | RR: 1:2 | Lev: 5x MIS | NIFTY 23,398 &bull; 20SMA(23,979) ke NEECHE <span class="patch">| candle bhavcopy se patch ✓ (130/130)</span></div>
-<div class="banner">MARKET WEAK — NIFTY 20SMA ke NEECHE. Sirf 9+ score wale picks dikhaye ja rahe hain. Size AADHA karo. Gap-up chase mat karo.</div>
-<div class="tablewrap"><table><tr><th>#</th><th class="l">SYMBOL</th><th class="l">SECTOR</th><th>SCORE</th><th>ENTRY</th><th>SL</th><th>TARGET</th><th>QTY</th><th>RISK ₹</th><th>GAIN @TGT</th><th>ATR%</th><th class="l">REASON (score breakdown)</th></tr><tr><td>1</td><td class="l sym">FSL</td><td class="l sec">SERVICES</td><td><span class="sc9">10</span></td><td>292.29</td><td class="sl">284.48</td><td class="tg">307.91</td><td>51</td><td>₹398</td><td class="gn">₹796</td><td>3.9%</td><td class="rsn">20D BREAKOUT · VOL 40.7x · GREEN · STRONG CLOSE · UPTREND · RS&gt;NIFTY · ATR SWEET</td></tr><tr><td>2</td><td class="l sym">ACMESOLAR</td><td class="l sec">POWER</td><td><span class="sc9">9</span></td><td>426.58</td><td class="sl">415.13</td><td class="tg">449.47</td><td>34</td><td>₹389</td><td class="gn">₹778</td><td>3.9%</td><td class="rsn">VOL 2.3x · GREEN · STRONG CLOSE · UPTREND+ · RS&gt;NIFTY · ATR SWEET · DELIV 43%</td></tr></table></div>
+<h1>AAJ KE 10 PICKS — Wed, 16 Sep 2026 ke liye</h1>
+<div class="meta">Signal: Tue, 15 Sep 2026 (close) | Universe: 496 liquid stocks (NIFTY500 (499)) | Capital: ₹1,50,000 | Risk: ₹400/trade | RR: 1:2 | Lev: 5x MIS | MARKET: WEAK (NIFTYBEES 20SMA ke NEECHE)<span class="patch">| Source: 100% NSE/BSE bhavcopy — Yahoo REMOVED ✓ (BSE-UDIFF 40, 40 sessions)</span> | FII/DII: unavailable<br><span style='color:#8f886f'>MIN-5 GUARANTEE: score tiers relax hote hain — LOW CONF / WEAK PASS tag = kam confidence, aadha size ya skip better</span></div>
+<div class="banner">MARKET WEAK — Nifty 20SMA ke NEECHE. LONG entries me size AADHA karo, SHORT setups ko priority do. Gap-down short chase mat karo, gap-up long mat karo.</div>
+<div class="legend"><b class="dl">LONG</b> = price ENTRY ke <b>UPAR</b> 5-min close ho to BUY &nbsp;|&nbsp;
+<b class="ds">SHORT</b> = price ENTRY ke <b>NEECHE</b> 5-min close ho to SELL (MIS, 3:20 tak square-off)</div>
+<div class="tablewrap"><table><tr><th>#</th><th class="l">SYMBOL</th><th class="l">DIR</th><th class="l">SECTOR</th><th>SCORE</th><th>ENTRY</th><th>SL</th><th>TARGET</th><th>QTY</th><th>RISK ₹</th><th>GAIN @TGT</th><th>ATR%</th><th>VOL×</th><th class="l">REASON (score breakdown)</th></tr><tr class='rS'><td>1</td><td class="l sym">AADHARHFC</td><td class="l dirS">SHORT</td><td class="l sec">FINANCE</td><td><span class="sc9">11</span></td><td>444.80</td><td class="sl">453.19</td><td class="tg">428.03</td><td>47</td><td>₹394</td><td class="gn">₹789</td><td>2.7%</td><td>4.7x</td><td class="rsn">20D BREAKDOWN · VOL 4.7x · RED · WEAK CLOSE · DOWNTREND+ · RS&lt;NIFTY · ATR SWEET · WEAK-MKT BIAS</td></tr><tr class='rS'><td>2</td><td class="l sym">CUMMINSIND</td><td class="l dirS">SHORT</td><td class="l sec">CAPGOODS</td><td><span class="sc9">11</span></td><td>4866.13</td><td class="sl">4950.16</td><td class="tg">4698.07</td><td>4</td><td>₹336</td><td class="gn">₹672</td><td>2.5%</td><td>3.6x</td><td class="rsn">20D BREAKDOWN · VOL 3.6x · RED · WEAK CLOSE · DOWNTREND+ · RS&lt;NIFTY · ATR SWEET · WEAK-MKT BIAS</td></tr><tr class='rS'><td>3</td><td class="l sym">COCHINSHIP</td><td class="l dirS">SHORT</td><td class="l sec">CAPGOODS</td><td><span class="sc9">11</span></td><td>1319.78</td><td class="sl">1352.19</td><td class="tg">1254.96</td><td>12</td><td>₹389</td><td class="gn">₹778</td><td>3.5%</td><td>2.2x</td><td class="rsn">20D BREAKDOWN · VOL 2.2x · RED · WEAK CLOSE · DOWNTREND+ · RS&lt;NIFTY · ATR SWEET · WEAK-MKT BIAS</td></tr><tr class='rS'><td>4</td><td class="l sym">ZENTEC</td><td class="l dirS">SHORT</td><td class="l sec">CAPGOODS</td><td><span class="sc9">11</span></td><td>1629.92</td><td class="sl">1677.22</td><td class="tg">1535.32</td><td>8</td><td>₹378</td><td class="gn">₹757</td><td>4.1%</td><td>2.0x</td><td class="rsn">20D BREAKDOWN · VOL 2.0x · RED · WEAK CLOSE · DOWNTREND+ · RS&lt;NIFTY · ATR SWEET · WEAK-MKT BIAS</td></tr><tr class='rS'><td>5</td><td class="l sym">ICICIGI</td><td class="l dirS">SHORT</td><td class="l sec">FINANCE</td><td><span class="sc9">11</span></td><td>1422.53</td><td class="sl">1446.13</td><td class="tg">1375.33</td><td>16</td><td>₹378</td><td class="gn">₹755</td><td>2.4%</td><td>1.9x</td><td class="rsn">20D BREAKDOWN · VOL 1.9x · RED · WEAK CLOSE · DOWNTREND+ · RS&lt;NIFTY · ATR SWEET · WEAK-MKT BIAS</td></tr><tr class='rL'><td>6</td><td class="l sym">FSL</td><td class="l dirL">LONG</td><td class="l sec">SERVICES</td><td><span class="sc9">10</span></td><td>292.44</td><td class="sl">284.52</td><td class="tg">308.29</td><td>50</td><td>₹396</td><td class="gn">₹792</td><td>4.0%</td><td>24.3x</td><td class="rsn">20D BREAKOUT · VOL 24.3x · GREEN · STRONG CLOSE · UPTREND · RS&gt;NIFTY · ATR SWEET</td></tr><tr class='rS'><td>7</td><td class="l sym">HEROMOTOCO</td><td class="l dirS">SHORT</td><td class="l sec">AUTO</td><td><span class="sc9">10</span></td><td>5175.82</td><td class="sl">5259.17</td><td class="tg">5009.12</td><td>4</td><td>₹333</td><td class="gn">₹667</td><td>2.3%</td><td>3.1x</td><td class="rsn">LOW KE PAAS · VOL 3.1x · RED · WEAK CLOSE · DOWNTREND+ · RS&lt;NIFTY · ATR SWEET</td></tr><tr class='rS'><td>8</td><td class="l sym">SRF</td><td class="l dirS">SHORT</td><td class="l sec">CHEM</td><td><span class="sc9">10</span></td><td>2445.60</td><td class="sl">2478.60</td><td class="tg">2379.61</td><td>12</td><td>₹396</td><td class="gn">₹792</td><td>1.9%</td><td>3.0x</td><td class="rsn">20D BREAKDOWN · VOL 3.0x · RED · WEAK CLOSE · DOWNTREND+ · ATR SWEET</td></tr><tr class='rS'><td>9</td><td class="l sym">MOTHERSON</td><td class="l dirS">SHORT</td><td class="l sec">AUTO</td><td><span class="sc9">10</span></td><td>157.94</td><td class="sl">160.90</td><td class="tg">152.02</td><td>135</td><td>₹400</td><td class="gn">₹799</td><td>2.7%</td><td>2.7x</td><td class="rsn">20D BREAKDOWN · VOL 2.7x · RED · WEAK CLOSE · DOWNTREND+ · ATR SWEET</td></tr><tr class='rS'><td>10</td><td class="l sym">ULTRACEMCO</td><td class="l dirS">SHORT</td><td class="l sec">CEMENT</td><td><span class="sc9">10</span></td><td>10717.47</td><td class="sl">10868.24</td><td class="tg">10415.93</td><td>2</td><td>₹302</td><td class="gn">₹603</td><td>2.0%</td><td>2.6x</td><td class="rsn">20D BREAKDOWN · VOL 2.6x · RED · WEAK CLOSE · DOWNTREND+ · ATR SWEET</td></tr></table></div>
+<div class="fii"><h2>FII / DII FLOWS</h2><div class="verdict ok">Aaj NSE se FII/DII data nahi mila — kal wapas try hoga. Flows sentiment ke liye hain, entry signal ke liye NAHI.</div></div>
 <div class="rules"><h2>KAL KE 5 RULES (Wed, 16 Sep 2026 ke liye)</h2><ol>
-<li>Entry tabhi jab price ENTRY ke <b>UPAR</b> 5-min candle CLOSE kare. 0.7%+ gap-up = <b>SKIP</b> (chase nahi karna).</li>
-<li>Entry ke saath hi <b>SL order</b> — bina SL entry nahi.</li>
-<li><b>Max 3 trades/day</b>; 2 winner = target poora = <b>BAND</b> (overtrade = account killer).</li>
-<li><b>3:00 PM ke baad</b> koi naya entry nahi.</li>
-<li>Result/RBI/expiry day pe <b>size aadha</b>.</li>
+<li>Entry sirf TRIGGER ke baad: LONG = ENTRY ke <b>UPAR</b> 5-min candle close; SHORT = ENTRY ke
+<b>NEECHE</b> 5-min candle close. Bina trigger trade NAHI.</li>
+<li><b>0.7%+ gap</b> ho to trade <b>SKIP</b> — gap-up pe long chase nahi, gap-down pe short chase nahi.</li>
+<li>Entry ke saath hi <b>SL order</b> — SHORT ka SL entry ke UPAR hota hai. SL hit = turant bahar, no average down.</li>
+<li><b>Max 3 trades/day</b>; 2 winner = ₹1,000 target poora = <b>BAND</b>. 3:00 PM ke baad naya entry nahi.</li>
+<li>Result/RBI/expiry day pe <b>size aadha</b>. FII/DII flows sentiment hai — entry signal NAHI.</li>
 </ol></div>
-<div class="foot">Data: NSE bhavcopy (EOD, source-of-truth) + Yahoo Finance 6mo daily | Auto-run: GitHub Actions, 8:00 PM IST (Mon-Fri)<br>
-Educational research note — financial advice NAHI. Bina SL trade = gambling.<br>
-Generated: 2026-09-16 04:08:02 IST | Runtime: 37s</div>
+<div class="foot">Data: 100% NSE/BSE bhavcopy EOD (~40 sessions) + NSE FII/DII | Yahoo: NAHI hai | Auto-run: GitHub Actions, 8:00 PM IST (Mon-Fri)<br>
+Educational research note — financial advice NAHI. Cash/MIS only, F&amp;O nahi. Bina SL trade = gambling.<br>
+Generated: 2026-09-16 04:56:24 IST | Runtime: 11s</div>
 </div></body>
 </html>
